@@ -8,7 +8,7 @@ app.use(cors())
 
 
 //connect to mongoose
-mongoose.connect("mongodb+srv://aditi-16:aditi2002@cluster0.ch56a.mongodb.net/instanewDB",{ useUnifiedTopology: true ,useNewUrlParser: true ,useFindAndModify: false })
+mongoose.connect("mongourl",{ useUnifiedTopology: true ,useNewUrlParser: true ,useFindAndModify: false })
 .then(()=> console.log("Connection Successful"))
 .catch((err)=> console.log(err));
 
