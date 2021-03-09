@@ -25,7 +25,18 @@ router.get('/user/:id',requirelogin,(req,res)=>{
     })
 })
 
-
+router.put('/stalk',requirelogin,(req,res)=>{
+    User.findByIdAndUpdate(req.body.stalkedAcc,{
+        $push:{stalkers:req.user.username}
+    },{
+        new:true
+    },(err,result)=>{
+        if(err){
+            return res.status(422).json({error:err})
+        }
+        res.json(result)
+    })
+})
 
 router.put('/follow',requirelogin,(req,res)=>{
     User.findByIdAndUpdate(req.body.followId,{
@@ -69,6 +80,14 @@ router.put('/unfollow',requirelogin,(req,res)=>{
 
     }
     )
+})
+
+router.get('/loggeduser',requirelogin,(req,res)=>{
+    User.findOne({_id:req.user._id})
+    .then(result=>{
+        res.json(result)
+    })
+    
 })
 
 router.put('/updatepic',requirelogin,(req,res)=>{
