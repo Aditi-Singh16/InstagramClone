@@ -9,7 +9,7 @@ function Navbar(){
     const {state,dispatch} = useContext(UserContext)
     const [searchTerm,setsearchTerm]=useState("")
     const [userslist,setuserslist] = useState([])
-    // var userarr =[]
+
     useEffect(()=>{
         fetch('http://localhost:5000/allusers',{
             method:"get",
@@ -25,9 +25,23 @@ function Navbar(){
         })
     },[])
     
-    // useEffect(()=>{
-    //    searchdiv.current.style.opacity = "1"
-    // },[searchTerm])
+    const handleuserclick=(stalkeduserid)=>{
+        fetch('http://localhost:5000/stalk',{
+            method:"put",
+            headers:{
+                "Content-Type":"application/json",
+                "Authorization":"Bearer "+localStorage.getItem("jwt")
+            },
+            body:JSON.stringify({
+                stalkedAcc:stalkeduserid
+            })
+        }).then(res=>res.json())
+        .then(result=>{
+            console.log(result)
+            
+        })
+            
+    }
     
     
     const handlechange = (val)=>{
@@ -53,35 +67,21 @@ function Navbar(){
                     
                     <div style={{zIndex:"2",backgroundColor:"white",width:"174px",height:"150px",opacity:"0",border:"1px solid rgb(92, 174, 250)",overflow:"scroll"}} ref={searchdiv}>
                         {
-                            // console.log(userslist),
-                            // userslist,
-                        //   userarr.filter(item=>{
-                        //       console.log(item)
-                        //       if(searchTerm==""){
-                        //         console.log("hello1")
-                        //         return ""
-                        //       }else if(item.username.toLowerCase().includes(searchTerm.toLowerCase())){
-                        //         console.log("hello")
-                        //         console.log(item.username)
-                        //         return item.username
-                        //       }
-                        //   })
-                        console.log(userslist),
-                        arr = userslist.filter(item=>{
-                            if(searchTerm==""){
-                                return ""
-                            }
-                            else if(item.username.toLowerCase().includes(searchTerm.toLowerCase())){
-                                return item.username
-                            }
-                        }).map(users=>{
-                            return(
-                                <p style={{color:"black",display:"flex",lineHeight:"5px"}}>
-                                    <img style={{width:"35px",height:"35px",borderRadius:"50%"}} src= {users.profilePic}></img>
-                                    <span style={{paddingTop:"15px",paddingLeft:"5px"}}>{users.username}</span>
-                                </p>
-                            )
-                        })  
+                            arr = userslist.filter(item=>{
+                                if(searchTerm==""){
+                                    return ""
+                                }
+                                else if(item.username.toLowerCase().includes(searchTerm.toLowerCase())){
+                                    return item.username
+                                }
+                            }).map(users=>{
+                                return(
+                                    <p style={{color:"black",display:"flex",lineHeight:"5px"}}>
+                                        <img style={{width:"35px",height:"35px",borderRadius:"50%"}} src= {users.profilePic}></img>
+                                        <Link onClick={()=>{handleuserclick(users._id)}} style={{paddingTop:"15px",paddingLeft:"5px",color:"black"}}  to = {users._id != state._id ? "/profile/"+users._id:"/profile"} >{users.username}</Link>    
+                                    </p>
+                                )
+                            })
                             
                         }
                     </div>
@@ -98,7 +98,8 @@ function Navbar(){
             ]
          }else{
                return[
-                <li><Link to="/login" className="list_item">login</Link></li>,
+                <li style={{fontFamily:"Grand Hotel, cursive",color:"black",fontSize:"30px",position:"absolute",left:"10%"}}>Instagram</li>,
+                <li><Link to="/login" className="list_item">Login</Link></li>,
                 <li><Link to = "/register" className="list_item">Signup</Link></li>
                ]
          }
