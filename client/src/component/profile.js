@@ -1,4 +1,4 @@
-import React, { useEffect,useState,useContext } from 'react';
+import React, { useEffect,useState,useContext,useRef } from 'react';
 import { Modal,Button } from 'react-bootstrap'
 import {UserContext} from '../App'
 import './styles.css'
@@ -7,9 +7,12 @@ import './styles.css'
 export default function Profile(){
     
     const [mypics,setpics] = useState([]);
+    //const showstalkers = useRef()
     const {state,dispatch} = useContext(UserContext)
     const [image,setimage] = useState("")
     const [show, setShow] = useState(false);
+    const [showstalkers,setshowstalkers] = useState(false)
+    const [mystalkers,setmystalkers] = useState([])
     console.log(state)
     // console.log(state?state.profilePic:"loading")
     useEffect(()=>{
@@ -62,6 +65,28 @@ export default function Profile(){
         setimage(file)
     }
 
+    const Stalkers = () => {
+        //showstalkers.current.style.opacity = "1"
+        setshowstalkers(true)
+    }
+    const hidestalkers = () =>{
+        setshowstalkers(false)
+    }
+    useEffect(()=>{
+        fetch('http://localhost:5000/loggeduser',{
+            method:"get",
+            headers:{
+                "Content-Type":"application/json",
+                "Authorization":"Bearer "+localStorage.getItem("jwt")
+            },
+        }).then(res=>res.json())
+        .then(result=>{
+            console.log(result.stalkers)
+            setmystalkers(result.stalkers)
+            // localStorage.setItem("user",JSON.stringify({...state,stalkers:result.stalkers}))
+            // dispatch({type:"UPDATESTALKERS",payload:result.stalkers})
+        })
+    },[])
     const handleClose = () => {
         console.log("handle close clicked")
         setShow(false);
@@ -105,11 +130,26 @@ export default function Profile(){
                         <p><span style={{fontWeight:"bold",marginRight:"5px"}}>{state?state.followers.length:"0"}</span>followers</p>
                         <p><span style={{fontWeight:"bold",marginRight:"5px"}}>{state?state.following.length:"0"}</span>following</p>
                     </div>
+                    <div>
+                    <button style={{zIndex:"0"}} className="btn waves-effect waves-light #2196f3 blue" onClick={()=>Stalkers()}>See who stalked You!!</button>   
+                    <div>
+                        <Modal style = {{position:"absolute",top:"30%"}} show={showstalkers}>
+                            <Modal.Title>These people stalked you</Modal.Title>
+                                <Modal.Body>
+                                    <p style={{fontWeight:"bold"}}>{mystalkers?mystalkers.map(item=>{return(<p>{item}</p>)}):"No stalkers"}</p>
+                            </Modal.Body>
+                            <Modal.Footer>
+                                <button className="btn  waves-effect waves-light #2196f3 blue" onClick={()=>hidestalkers()}>Close</button>
+                            </Modal.Footer>
+                        </Modal>   
+                    </div>
                 </div>
+                </div>
+                
             </div>
             
             <>
-            {console.log(show)}
+            
             
         </>
       
@@ -191,3 +231,4 @@ export default function Profile(){
         
     )
 }
+
