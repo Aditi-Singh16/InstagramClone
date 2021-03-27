@@ -26,16 +26,20 @@ router.get('/user/:id',requirelogin,(req,res)=>{
 })
 
 router.put('/stalk',requirelogin,(req,res)=>{
-    User.findByIdAndUpdate(req.body.stalkedAcc,{
-        $push:{stalkers:req.user.username}
-    },{
-        new:true
-    },(err,result)=>{
-        if(err){
-            return res.status(422).json({error:err})
+    User.findByIdAndUpdate({ stalkers: req.user.username },(err,doc)=>{
+        if(!doc){
+            User.updateOne({stalkers:req.user.username},{
+                new:true
+            },(err,result)=>{
+                if(err){
+                    return res.status(422).json({error:err})
+                }
+                res.json(result)
+            })
         }
-        res.json(result)
     })
+    
+    
 })
 
 router.put('/follow',requirelogin,(req,res)=>{
