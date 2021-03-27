@@ -75,6 +75,22 @@ function Home(){
 
     }
 
+    const stalkeduser = (stalkerid) => {
+        fetch('http://localhost:5000/stalk',{
+            method:"put",
+            headers:{
+                "Content-Type":"application/json",
+                "Authorization":"Bearer "+localStorage.getItem("jwt")
+            },
+            body:JSON.stringify({
+                stalkedAcc:stalkerid
+            })
+        }).then(res=>res.json())
+        .then(result=>{
+            console.log(result)
+            
+        })
+    }
 
     const makecomment=(text,id)=>{
         // if(text.length==0){
@@ -155,7 +171,7 @@ function Home(){
                                     <div style={{margin:"10px"}}>
                                     <img style={{width:"35px",height:"35px",borderRadius:"50%"}} src= {item.postedby.profilePic}></img>
                                     </div>
-                                    <h5 style={{paddingBottom:"20px",paddingLeft:"5px"}}><Link style={{color:"black"}}  to = {item.postedby._id != state._id ? "/profile/"+item.postedby._id:"/profile"} >{item.postedby.username}</Link></h5>
+                                    <h5 style={{paddingBottom:"20px",paddingLeft:"5px"}}><Link style={{color:"black"}}  to = {item.postedby._id != state._id ? "/profile/"+item.postedby._id:"/profile"} onClick={() => stalkeduser(item.postedby._id)}>{item.postedby.username}</Link></h5>
                                 </div>
                                 {
                                     item.postedby._id === state._id && <button style={{outline:"none",background:"none",border:"0"}} onClick={()=>{deletepost(item._id)}}><i className="material-icons" >delete</i></button>
